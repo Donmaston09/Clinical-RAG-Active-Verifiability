@@ -9,4 +9,11 @@ nltk
 scikit-learn
 numpy
 pandas
+pdfplumber
+requests
+seaborn
+openai
+plotly
+
+
 
