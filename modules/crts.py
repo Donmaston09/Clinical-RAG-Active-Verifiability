@@ -1,90 +1,68 @@
-import numpy as np
+
+from typing import Dict, Any, Optional
+
+DEFAULT_WEIGHTS = {"alpha": 0.30, "beta": 0.30, "gamma": 0.20, "delta": 0.20}
+
 
 def compute_crts(
-    attestations,
-    conflict_summary,
-    surfaced_risks_count=0,
-    nice_matches=None
-):
+    attestations: Dict[str, Any],
+    conflict_summary: Dict[str, Any],
+    guideline_alignment: Optional[Dict[str, Optional[Dict[str, Any]]]] = None,
+    surfaced_risks_count: int = 0,
+    k_seconds: float = 5.0,
+    weights: Dict[str, float] = DEFAULT_WEIGHTS,
+) -> Dict[str, Any]:
     """
-    Computes the Clinical RAG Transparency Score (CRTS) according to
-    the formal definitions described in the manuscript.
+    Computes the Clinical RAG Transparency Score (CRTS) components with
+    corrected definitions:
+      - SF: proportion of claims with non-empty attestation
+      - CRR: S/D if D>0 else 1, bounded to [0,1]
+      - AR*: min(1, k/L) with L derived from attestation granularity
+      - GA: proportion of claims with a guideline match (>= threshold)
 
-    Components:
-    - Source Fidelity (SF)
-    - Conflict Reporting Rate (CRR)
-    - Audit Responsiveness (AR = 1 / L)
-    - Guideline Alignment (GA)
-
-    Parameters
-    ----------
-    attestations : dict
-        Mapping of generated claims to attestation metadata.
-        A claim is considered grounded if it has non-empty evidence.
-
-    conflict_summary : dict
-        Output from detect_conflicts(), containing detected risk signals.
-
-    surfaced_risks_count : int
-        Number of risk or safety signals explicitly surfaced in the synthesis.
-
-    nice_matches : list or None
-        List of NICE guideline matches. Empty or None implies no alignment.
-
-    Returns
-    -------
-    dict
-        CRTS components and raw audit latency.
+    Returns dict with components, raw latency L, and composite.
     """
-
-    # ------------------------------------------------------------
-    # 1. Source Fidelity (SF)
-    # ------------------------------------------------------------
+    # --- Source Fidelity ---
     n_claims = len(attestations)
+    sf = (sum(1 for v in attestations.values() if v) / n_claims) if n_claims else 0.0
 
-    if n_claims > 0:
-        sf = sum(
-            1 for v in attestations.values() if v
-        ) / n_claims
-    else:
-        sf = 0.0
-
-    # ------------------------------------------------------------
-    # 2. Conflict Reporting Rate (CRR)
-    # ------------------------------------------------------------
-    detected_conflicts = conflict_summary.get("risk", 0)
-
+    # --- Conflict Reporting Rate ---
+    detected_conflicts = int(conflict_summary.get("risk", 0))
     if detected_conflicts > 0:
-        crr = min(1.0, surfaced_risks_count / detected_conflicts)
+        crr = min(1.0, max(0.0, surfaced_risks_count / detected_conflicts))
     else:
-        # No conflicts detected implies perfect reporting
         crr = 1.0
 
-    # ------------------------------------------------------------
-    # 3. Audit Responsiveness (AR = 1 / L)
-    # ------------------------------------------------------------
-    # Granular attestation (sentence-level) assumed faster audit
-    has_granular_attestation = any(
-        isinstance(v, dict) and "source_text" in v
-        for v in attestations.values()
-    )
+    # --- Audit Responsiveness --- (L in seconds; AR* normalized)
+    has_granular_attestation = any(isinstance(v, dict) and "source_text" in v for v in attestations.values())
+    L = 2.0 if has_granular_attestation else 5.0
+    ar = min(1.0, float(k_seconds) / float(L))  # AR* in [0,1]
 
-    # Latency proxy (seconds)
-    L = 2 if has_granular_attestation else 5
-    ar = 1 / L
+    # --- Guideline Alignment --- (proportion of claims matched)
+    if guideline_alignment and n_claims:
+        ga = sum(1 for v in guideline_alignment.values() if v is not None) / n_claims
+    else:
+        ga = 0.0
 
-    # ------------------------------------------------------------
-    # 4. Guideline Alignment (GA)
-    # ------------------------------------------------------------
-    ga = 1.0 if nice_matches else 0.0
+    alpha = float(weights.get("alpha", 0.30))
+    beta = float(weights.get("beta", 0.30))
+    gamma = float(weights.get("gamma", 0.20))
+    delta = float(weights.get("delta", 0.20))
+    # Normalize weights to sum to 1 for safety
+    total_w = alpha + beta + gamma + delta
+    if total_w <= 0:
+        alpha, beta, gamma, delta = 0.30, 0.30, 0.20, 0.20
+        total_w = 1.0
+    alpha, beta, gamma, delta = (alpha/total_w, beta/total_w, gamma/total_w, delta/total_w)
 
-    # ------------------------------------------------------------
-    # Final CRTS component dictionary
-    # ------------------------------------------------------------
+    composite = alpha*sf + beta*crr + gamma*ar + delta*ga
+
     return {
         "sf": round(sf, 2),
         "crr": round(crr, 2),
         "ar": round(ar, 2),
         "ga": round(ga, 2),
-        "L": L
+        "L": L,
+        "weights": {"alpha": alpha, "beta": beta, "gamma": gamma, "delta": delta},
+        "crts": round(composite, 2),
     }
