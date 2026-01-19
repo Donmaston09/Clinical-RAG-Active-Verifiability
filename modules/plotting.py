@@ -1,43 +1,36 @@
+
+"""
+Plotting utilities for CRTS
+- Radar chart expects values in [0,1] for: SF, CRR, AR*, GA
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_crts_radar(plot_data):
-    # These labels must match the keys in the dictionary you pass from app.py
-    labels = ["Source Fidelity", "Conflict Reporting", "Audit Responsiveness", "Guideline Alignment"]
+LABELS = ["Source Fidelity", "Conflict Reporting", "Audit Responsiveness", "Guideline Alignment"]
 
-    # Use .get() to avoid KeyErrors if a metric is missing
-    values = [
-        plot_data.get("Source Fidelity", 0),
-        plot_data.get("Conflict Reporting", 0),
-        plot_data.get("Audit Responsiveness", 0),
-        plot_data.get("Guideline Alignment", 0)
-    ]
 
-    # Number of variables
-    num_vars = len(labels)
+def plot_crts_radar(crts_dict):
+    """crts_dict can be either the raw dict from compute_crts or a mapping
+    with keys matching LABELS. We normalise accordingly.
+    """
+    # Flexible input handling
+    if all(k in crts_dict for k in ("sf","crr","ar","ga")):
+        values = [crts_dict['sf'], crts_dict['crr'], crts_dict['ar'], crts_dict['ga']]
+    else:
+        # assume a mapping from pretty labels → values
+        values = [crts_dict.get(LABELS[0],0), crts_dict.get(LABELS[1],0), crts_dict.get(LABELS[2],0), crts_dict.get(LABELS[3],0)]
 
-    # Compute angle for each axis
-    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    values = np.array(values, dtype=float)
+    # close the loop
+    vals_closed = np.r_[values, values[0]]
+    angles = np.linspace(0, 2*np.pi, len(LABELS), endpoint=False)
+    ang_closed = np.r_[angles, angles[0]]
 
-    # The plot is a circle, so we must "complete the loop"
-    # by appending the start value to the end.
-    values += values[:1]
-    angles += angles[:1]
-
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-
-    # Draw one axe per variable + add labels
-    plt.xticks(angles[:-1], labels, color='grey', size=10)
-
-    # Draw ylabels
-    ax.set_rlabel_position(0)
-    plt.yticks([0.25, 0.5, 0.75, 1.0], ["0.25", "0.50", "0.75", "1.00"], color="grey", size=7)
-    plt.ylim(0, 1)
-
-    # Plot data
-    ax.plot(angles, values, linewidth=2, linestyle='solid', color='#1f77b4')
-
-    # Fill area
-    ax.fill(angles, values, color='#1f77b4', alpha=0.3)
-
+    fig, ax = plt.subplots(figsize=(5,5), subplot_kw=dict(polar=True))
+    ax.set_theta_offset(np.pi/2)
+    ax.set_theta_direction(-1)
+    ax.set_thetagrids(angles * 180/np.pi, LABELS)
+    ax.set_ylim(0, 1)
+    ax.plot(ang_closed, vals_closed, color='#FF1493', linewidth=2)
+    ax.fill(ang_closed, vals_closed, color='#FF1493', alpha=0.15)
     return fig
