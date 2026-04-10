@@ -1,0 +1,32 @@
+---
+layout: default
+title: "Engage the Enemy From Destiny to Pray Yourself into Destiny"
+author: "Dr. Anthony Onoja"
+---
+
+# Engage the Enemy From Destiny to Pray Yourself into Destiny
+**By Dr. Anthony Onoja**
+
+![Engage the Enemy From Destiny to Pray Yourself into Destiny](https://donmaston09.github.io/CraftChronicles/assets/engage-the-enemy-from-destiny-to-pray-yourself-into-destiny.png)
+
+“I am Alpha and Omega, the beginning and the ending, saith the Lord, which is, and which was, and which is to come, the Almighty.” – Revelation 1:8
+
+Some days ago, I was praying with my family, and suddenly a phrase popped into my mind: pray from destiny to pray yourselves into destiny. By the end of this masterpiece, you will learn something no one has ever told you about—how to pray from destiny in order to pray yourself into destiny.
+
+To begin with, let us define what destiny means. It is your true identity in God. It is not just a destination, but also an identity that has long been prepared and willed by God for you from the very first day your thought was conceived in His heart. Like I tell people, you are not some product of a biological mistake. God was so careful that you would be here that He began searching for the right womb and sperm for your conception from the beginning of creation. If you study human DNA, you will appreciate the intelligent design that goes into one whole human being. That is why we must frown at wicked people who take life for granted and waste the most precious gift in the entire universe as though it is nothing, in the name of a god they have neither seen nor heard say “kill or be killed.”
+
+However, as powerful as your creation is, God hid something important from you—your roadmap. The Scripture was right: the way of man is not in himself; it is not for the son of man to direct his path. The trajectory you follow to arrive at the fulfilment of your destiny has been completely sealed and hidden from you. However, God will give you clues and tipping points. If you are sensitive enough, you will notice them and follow, but if you become like the foolish virgins, you will miss the enlightenment.
+
+Why would God hide such an important blueprint from you?
+For two reasons. First, because the enemy you are fighting is data-hungry. He is always looking for every possible clue to piece together the puzzle, either to get there before you or to distort it so you never find your way. Secondly, God hides it from you because your present self is not yet trustworthy enough to manage the excesses and burdens that come with the weight of destiny. You must understand that your life is precious to Him, more than your ego, pride, and attitude that can ruin His purpose. Therefore, He has to hide it until He trains you and ensures you are mature enough to keep the vultures and hyenas away.
+
+So what must you do?
+You must first understand that your life is not your own. You are on borrowed time. You are here because someone, somewhere, has an urgent need that God wants you—yes, you—to fulfil. So be deliberate in denoising your life and prioritising what is truly important. Someone may ask, how do I even know what is important if I am barely trying to survive? Well, the reason you are trying to survive may be because you are navigating the wrong route, or possibly you have sent yourself on a mission God never approved. Secondly, you may be struggling because you lack knowledge. What many people need is knowledge to change their mindset. Your greatest tool is your mind. You must train it how to think and what to think. The mind is a living algorithm—if trained, it can turn a beggar into a king and a prince into a beggar. To train the mind, you must be deliberate in your pursuit of knowledge. Seek it as though it is gold, because it is, and it has the power to transform your life. Seek knowledge not in the casual way many do, but in a way that enlightens your mind. Feed on the Word of God, listen to great minds that can spark your thinking. Attend workshops, seminars, conferences, and meet-ups. Prioritise mentoring and seek the company of bright minds.
+
+Thirdly, prayer. Never underestimate the power of prayer, especially when it comes to the dealings of destiny. Your destiny cannot be taken on altars of negotiation. You must fight for it. Like Jacob, he wrestled until morning. But here is the catch—the angel addressed Jacob as a prince with God. Wait a minute, he was a shepherd. How then did the angel call him a prince? Because that was who he truly was in God. In Jacob came Christ. So when Jacob fought the angel, he was fighting from destiny to enter into destiny. It means Jacob fought with the strength of Israel in order for Jacob to become Israel. Think about it, how could a mere mortal like Jacob withstand an angel for such a long time? Because inside Jacob was Joseph, Judah, Moses, Samson, David, and Jesus. These were not just men, but men who had power with both God and man.
+
+Engaging the enemy from destiny into the place of destiny is a secret many do not know. You are not coming as one man. You are coming as a troop, with the strength, power, and authority of all the men and women lined up behind you who are inside you. You are coming from the land of Omega. My friend, the land of Omega is the home of victors. It is the birthplace of rest. The city of Alpha is the arrival point of contenders, men who fight for Omega to manifest. Do you not know that from the time of John the Baptist until now, the kingdom of God suffers violence, and the violent take it by force? The arrival of Omega can only come when the Alphas awaken and fight.
+
+Can you wake up and fight? Fight like a man, not as one beating the air, but as one who fights with full knowledge of who he is in God. Do not fight like a loser. Fight from victory. Fight like one who already knows he has won. That is why the Lamb was slain from the foundation of the world. When something is already done, it cannot be undone. The realm is not confused. The kingdom is established. It is not a myth, it is a convergence, a reality that is bound to manifest. That is why we pray, let Thy kingdom come. I pray for you in this season that you awaken and pray from Omega as you walk your way from Alpha, because in between there are wars, rage, and bitter battles from an embittered enemy who knows he has already lost.
+
+May the Lord grant you victory as you walk yourself into destiny, in Jesus’ name. Amen.
