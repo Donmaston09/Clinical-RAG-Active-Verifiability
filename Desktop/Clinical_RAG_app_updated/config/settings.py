@@ -1,0 +1,3 @@
+NCBI_EMAIL = "a.onoja@surrey.ac.uk"
+MAX_PUBMED_RESULTS = 1000
+MIN_RELEVANCE_SCORE = 0.15
