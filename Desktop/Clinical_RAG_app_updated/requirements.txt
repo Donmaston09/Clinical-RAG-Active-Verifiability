@@ -8,3 +8,6 @@ nltk
 scikit-learn
 numpy
 pandas
+beautifulsoup4
+requests
+pdfplumber
