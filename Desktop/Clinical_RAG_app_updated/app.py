@@ -40,7 +40,10 @@ st.sidebar.divider()
 st.sidebar.subheader("Framework Methodology")
 
 with st.sidebar.expander("Active Verifiability (AV)", expanded=True):
-    st.image("figures/Figure_RAGs_transparency.png", use_container_width=True)
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    img_path = os.path.join(base_dir, "figures", "Figure_RAGs_transparency.png")
+    st.image(img_path, use_container_width=True)
     st.caption(
         "Figure 1. End-to-end architecture showing evidence ingestion, "
         "contradiction-aware retrieval, attestation-linked generation, "
