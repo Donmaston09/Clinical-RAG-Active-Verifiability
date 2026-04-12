@@ -10,17 +10,12 @@ import json
 import re
 import streamlit as st
 
-try:
-    import google.generativeai as genai
-except Exception:  # allow running without the SDK (fallback still works)
-    genai = None
-
+from modules.llm_wrapper import generate_content as llm_generate
 
 def _split_sentences(text: str) -> List[str]:
     # Lightweight splitter; avoids external deps
     parts = re.split(r"(?<=[.!?])\s+", (text or "").strip())
     return [p.strip() for p in parts if len(p.strip()) > 30]
-
 
 def _validate_json_claims(
     data: Dict[str, Any], docs_by_pmid: Dict[str, Dict]
@@ -49,9 +44,8 @@ def _validate_json_claims(
     items = list(clean_att.items())[:6]
     return synthesis, dict(items)
 
-
 def generate_with_attestation(
-    query: str, documents: List[Dict[str, Any]], api_key: str = None
+    query: str, documents: List[Dict[str, Any]], provider: str = "Gemini", api_key: str = None
 ) -> Tuple[str, Dict[str, Any]]:
     """
     Synthesize clinical evidence and map atomic claims to exact source sentences.
@@ -60,12 +54,9 @@ def generate_with_attestation(
     """
     docs_by_pmid = {str(d.get("pmid")): d for d in documents}
 
-    # --- LLM PATH (if available) ---
-    if api_key and genai is not None:
+    # --- LLM PATH (if configured) ---
+    if api_key:
         try:
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel("gemini-2.5-flash-lite")
-
             # Build context lines WITHOUT f-strings in the final prompt
             context_lines = []
             for d in documents[:3]:
@@ -95,22 +86,26 @@ def generate_with_attestation(
             ]
             prompt = "\n".join(prompt_lines)
 
-            response = model.generate_content(prompt)
-            raw = (getattr(response, "text", "") or "").strip()
-            clean_json = raw.replace("```json", "").replace("```", "").strip()
-            data = json.loads(clean_json)
-            synthesis, clean_att = _validate_json_claims(data, docs_by_pmid)
-            if clean_att:
-                return synthesis, clean_att
-            else:
-                st.sidebar.warning(
-                    "LLM returned no verifiable claims; using deterministic fallback."
-                )
+            # --- Unified Wrapper Call ---
+            clean_json = ""
+            raw = llm_generate(prompt, provider, api_key)
+            if raw:
+                clean_json = raw.replace("```json", "").replace("```", "").strip()
+            
+            if clean_json:
+                data = json.loads(clean_json)
+                synthesis, clean_att = _validate_json_claims(data, docs_by_pmid)
+                if clean_att:
+                    return synthesis, clean_att
+                else:
+                    st.sidebar.warning(
+                        "LLM returned no verifiable claims; using deterministic fallback."
+                    )
         except Exception as e:
-            if "429" in str(e):
-                st.sidebar.warning("API quota reached. Using deterministic fallback.")
+            if "429" in str(e) or "quota" in str(e).lower():
+                st.sidebar.warning(f"{provider} API quota reached. Using deterministic fallback.")
             else:
-                st.sidebar.error(f"LLM error: {e}")
+                st.sidebar.error(f"{provider} LLM error: {e}")
 
     # --- DETERMINISTIC FALLBACK ---
     attestations: Dict[str, Any] = {}

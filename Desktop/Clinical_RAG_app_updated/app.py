@@ -96,9 +96,15 @@ st.sidebar.caption(
 # Sidebar: LLM configuration + guidelines
 # ---------------------------------------
 st.sidebar.subheader("Configuration")
-user_key = st.sidebar.text_input("Enter Gemini API Key (optional)", type="password")
+provider = st.sidebar.selectbox("LLM Provider", ["Gemini", "OpenAI", "Anthropic"])
+user_key = st.sidebar.text_input(f"Enter {provider} API Key (optional)", type="password")
 
-# EvidenceAnalyserAgent and generate_with_attestation will both use this key if provided.
+with st.sidebar.expander("Where do I get an API key?"):
+    st.markdown("- **Gemini**: [Google AI Studio](https://aistudio.google.com/app/apikey)")
+    st.markdown("- **OpenAI**: [OpenAI API Keys](https://platform.openai.com/api-keys)")
+    st.markdown("- **Anthropic**: [Anthropic Console](https://console.anthropic.com/settings/keys)")
+
+# EvidenceAnalyserAgent and generate_with_attestation will both use this key and provider if provided.
 
 st.sidebar.subheader("Guideline Anchoring")
 source_type = st.sidebar.radio("Guideline Source", ["Web Link", "Upload PDF"])
@@ -228,12 +234,12 @@ if query:
         conflict_summary = detect_conflicts(documents)
 
         # 3) Agent A: LLM-based evidence & stance analysis (per abstract)
-        evidence_agent = EvidenceAnalyserAgent(api_key=user_key or None)
+        evidence_agent = EvidenceAnalyserAgent(api_key=user_key or None, provider=provider)
         evidence_claims = evidence_agent.analyse_docs(documents)
 
         # 4) Generative synthesis + attestation (sentence-level grounding)
         synthesis, attestations = generate_with_attestation(
-            query, documents, api_key=user_key
+            query, documents, provider=provider, api_key=user_key
         )
 
         # 5) Guideline alignment (TF-IDF + cosine as before)
@@ -251,6 +257,7 @@ if query:
         # 7) Agent B: Guideline comparator (richer labels) – optional
         guideline_agent = GuidelineComparatorAgent(
             api_key=user_key or None,
+            provider=provider,
             default_source_name="Guideline",
         )
         guideline_assessments = guideline_agent.assess_claims(

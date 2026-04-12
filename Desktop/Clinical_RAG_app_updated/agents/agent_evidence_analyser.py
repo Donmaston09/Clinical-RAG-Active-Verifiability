@@ -18,11 +18,7 @@ Agent A: LLM-based evidence analyser
 from typing import List, Dict, Any, Optional
 import json
 
-try:
-    import google.generativeai as genai
-except Exception:
-    genai = None
-
+from modules.llm_wrapper import generate_content as llm_generate
 
 class EvidenceAnalyserAgent:
     """
@@ -44,23 +40,9 @@ class EvidenceAnalyserAgent:
         }
     """
 
-    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-2.5-flash-lite"):
-        """
-        api_key: Gemini API key. If None or SDK unavailable, the agent will
-                 return an empty list (transparent no-op) rather than fail.
-        model_name: Gemini model name, aligned with your attestation path.
-        """
+    def __init__(self, api_key: Optional[str] = None, provider: str = "Gemini"):
         self.api_key = api_key
-        self.model_name = model_name
-
-        self._model = None
-        if genai is not None and api_key:
-            try:
-                genai.configure(api_key=api_key)
-                self._model = genai.GenerativeModel(model_name)
-            except Exception:
-                # Fail gracefully: treat as unavailable
-                self._model = None
+        self.provider = provider
 
     # -----------------------------
     # Prompt building
@@ -112,20 +94,16 @@ class EvidenceAnalyserAgent:
     # -----------------------------
     def _call_llm(self, prompt: str) -> str:
         """
-        Call Gemini with the provided prompt and return raw text.
-
-        If the model or API key is not available, return an empty string,
-        making the agent a safe no-op.
+        Call the dynamic LLM model securely using the wrapper.
         """
-        if self._model is None:
+        if not self.api_key:
             return ""
 
         try:
-            response = self._model.generate_content(prompt)
-            raw = (getattr(response, "text", "") or "").strip()
-            return raw
-        except Exception:
+            return llm_generate(prompt, self.provider, self.api_key)
+        except Exception as e:
             # Fail closed: do not throw, but return empty string
+            print(f"Agent A LLM Error: {e}")
             return ""
 
     # -----------------------------
@@ -137,8 +115,8 @@ class EvidenceAnalyserAgent:
         """
         results: List[Dict[str, Any]] = []
 
-        if self._model is None or not docs:
-            # No LLM configured or no documents; transparent no-op
+        if not self.api_key or not docs:
+            # transparent no-op
             return results
 
         for doc in docs:

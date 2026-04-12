@@ -18,10 +18,7 @@ richer view you can surface in the UI and later decide how to integrate.
 from typing import List, Dict, Any, Optional
 import json
 
-try:
-    import google.generativeai as genai
-except Exception:
-    genai = None
+from modules.llm_wrapper import generate_content as llm_generate
 
 # If you prefer, you can place this helper in modules/guideline_retrieval_extended
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -85,20 +82,12 @@ class GuidelineComparatorAgent:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "gemini-2.5-flash-lite",
+        provider: str = "Gemini",
         default_source_name: str = "Guideline",
     ):
         self.api_key = api_key
-        self.model_name = model_name
+        self.provider = provider
         self.default_source_name = default_source_name
-
-        self._model = None
-        if genai is not None and api_key:
-            try:
-                genai.configure(api_key=api_key)
-                self._model = genai.GenerativeModel(model_name)
-            except Exception:
-                self._model = None
 
     # -----------------------------
     # Prompt building
@@ -161,13 +150,12 @@ class GuidelineComparatorAgent:
     # LLM call
     # -----------------------------
     def _call_llm(self, prompt: str) -> str:
-        if self._model is None:
+        if not self.api_key:
             return ""
         try:
-            response = self._model.generate_content(prompt)
-            raw = (getattr(response, "text", "") or "").strip()
-            return raw
-        except Exception:
+            return llm_generate(prompt, self.provider, self.api_key)
+        except Exception as e:
+            print(f"Agent B LLM Error: {e}")
             return ""
 
     # -----------------------------
@@ -184,7 +172,7 @@ class GuidelineComparatorAgent:
         """
         results: List[Dict[str, Any]] = []
 
-        if self._model is None or not claims or not guideline_chunks:
+        if not self.api_key or not claims or not guideline_chunks:
             return results
 
         # Pre-filter: TF-IDF-based nearest guideline chunks per claim
